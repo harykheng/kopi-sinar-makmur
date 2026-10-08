@@ -9,5 +9,9 @@
   // Function, unrelated to Cloudflare).
   "assets": {
     "directory": "./dist"
-  }
+  },
+  // Wajib ada (boleh kosong) supaya build branch selain production bisa
+  // jalan: Cloudflare Workers Builds memakai `npx wrangler preview` untuk
+  // branch non-production, dan perintah itu menolak config tanpa blok ini.
+  "previews": {}
 }
