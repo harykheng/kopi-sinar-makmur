@@ -43,28 +43,47 @@ export default function OngkirOptions() {
   }
 
   // shippingStatus === 'options'
+  // Grouped per courier (Grab, Paxel, ...) in the order Biteship returned them.
+  // Each entry keeps its index into shippingOptions, SELECT_SHIPPING_OPTION
+  // still selects by that original index.
+  const groups = [];
+  shippingOptions.forEach((o, i) => {
+    let group = groups.find((g) => g.name === o.courierName);
+    if (!group) {
+      group = { name: o.courierName, items: [] };
+      groups.push(group);
+    }
+    group.items.push({ ...o, index: i });
+  });
+
   return (
     <div style={{ marginTop: 10 }}>
-      <div className="ongkir-options-list">
-        {shippingOptions.map((o, i) => {
-          const isSelected = selectedShipping?.label === `${o.courierName} - ${o.serviceName}`;
-          return (
-            <button
-              type="button"
-              key={`${o.courierCode}-${o.serviceName}`}
-              className={`ongkir-option-item${isSelected ? ' selected' : ''}`}
-              aria-pressed={isSelected}
-              onClick={() => dispatch({ type: 'SELECT_SHIPPING_OPTION', index: i })}
-            >
-              <div className="ongkir-left">
-                <div className="ongkir-courier">{o.courierName} · {o.serviceName}</div>
-                <div className="ongkir-eta">{o.duration || ''}</div>
-              </div>
-              <div className="ongkir-price">{formatPrice(o.price)}</div>
-            </button>
-          );
-        })}
-      </div>
+      <div className="ongkir-options-title">Pilih opsi pengiriman</div>
+      {groups.map((g) => (
+        <div className="ongkir-group" key={g.name} role="group" aria-label={g.name}>
+          <div className="ongkir-group-label">{g.name}</div>
+          <div className="ongkir-options-list">
+            {g.items.map((o) => {
+              const isSelected = selectedShipping?.label === `${o.courierName} - ${o.serviceName}`;
+              return (
+                <button
+                  type="button"
+                  key={`${o.courierCode}-${o.serviceName}`}
+                  className={`ongkir-option-item${isSelected ? ' selected' : ''}`}
+                  aria-pressed={isSelected}
+                  onClick={() => dispatch({ type: 'SELECT_SHIPPING_OPTION', index: o.index })}
+                >
+                  <div className="ongkir-left">
+                    <div className="ongkir-courier">{o.serviceName}</div>
+                    <div className="ongkir-eta">{o.duration || ''}</div>
+                  </div>
+                  <div className="ongkir-price">{formatPrice(o.price)}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
