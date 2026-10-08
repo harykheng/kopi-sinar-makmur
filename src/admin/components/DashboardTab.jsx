@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useOrders } from '../../shared/hooks/useOrders.js';
 import { useDailyVisits } from '../../shared/hooks/useDailyVisits.js';
 import { formatPrice } from '../../shared/lib/format.js';
@@ -37,6 +37,54 @@ function toDateKey(d) {
   return d.toISOString().slice(0, 10);
 }
 
+function fullDayLabel(d) {
+  return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' });
+}
+
+// Angka tiap batang muncul saat batang di-hover, di-tap, atau dapat fokus
+// keyboard. Bukan hover saja: pemilik toko paling sering buka dashboard dari
+// HP, dan di layar sentuh hover tidak ada. Tiap kolom karena itu <button>.
+// Hover dibaca lewat pointer event yang pointerType-nya 'mouse' saja: tap di
+// HP juga memicu mouseleave tiruan yang langsung menutup tooltip-nya lagi.
+function DayBarChart({ days, max, formatValue, detail }) {
+  const [active, setActive] = useState(null);
+  return (
+    <div className="dash-chart" onPointerLeave={(e) => e.pointerType === 'mouse' && setActive(null)}>
+      {days.map((d, i) => {
+        const isActive = active === i;
+        const edge = i === 0 ? ' start' : i === days.length - 1 ? ' end' : '';
+        return (
+          <button
+            type="button"
+            className={`dash-chart-col${isActive ? ' active' : ''}`}
+            key={i}
+            aria-label={`${d.fullLabel}: ${formatValue(d.value)}`}
+            onPointerEnter={(e) => e.pointerType === 'mouse' && setActive(i)}
+            onFocus={() => setActive(i)}
+            onBlur={() => setActive(null)}
+            onClick={() => setActive(i)}
+          >
+            <div className="dash-chart-bar-wrap">
+              <div
+                className={`dash-chart-bar${d.isToday ? ' today' : ''}`}
+                style={{ height: `${Math.max(4, (d.value / max) * 100)}%` }}
+              >
+                {isActive && (
+                  <div className={`dash-chart-tip${edge}`} aria-hidden="true">
+                    <strong>{formatValue(d.value)}</strong>
+                    <span>{detail ? `${d.fullLabel} · ${detail(d)}` : d.fullLabel}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="dash-chart-label">{d.label}</div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function DashboardTab({ onGoToOrders }) {
   const { orders, loading, error, refetch } = useOrders();
   const { visits, loading: visitsLoading, error: visitsError } = useDailyVisits(7);
@@ -51,6 +99,7 @@ export default function DashboardTab({ onGoToOrders }) {
       d.setDate(d.getDate() - i);
       days.push({
         label: d.toLocaleDateString('id-ID', { weekday: 'short' }),
+        fullLabel: fullDayLabel(d),
         isToday: i === 0,
         count: countByDate.get(toDateKey(d)) || 0,
       });
@@ -104,8 +153,10 @@ export default function DashboardTab({ onGoToOrders }) {
       const dayOrders = revenueOrders.filter((o) => isSameDay(o.created_at, d));
       days.push({
         label: d.toLocaleDateString('id-ID', { weekday: 'short' }),
+        fullLabel: fullDayLabel(d),
         isToday: i === 0,
         revenue: sumTotal(dayOrders),
+        orderCount: dayOrders.length,
       });
     }
     const maxDayRevenue = Math.max(1, ...days.map((d) => d.revenue));
@@ -236,38 +287,21 @@ export default function DashboardTab({ onGoToOrders }) {
 
       <div className="dash-section">
         <h3 className="dash-section-title">Berapa orang buka katalog per hari, 7 hari terakhir?</h3>
-        <div className="dash-chart">
-          {visitStats.days.map((d, i) => (
-            <div className="dash-chart-col" key={i}>
-              <div className="dash-chart-bar-wrap">
-                <div
-                  className={`dash-chart-bar${d.isToday ? ' today' : ''}`}
-                  style={{ height: `${Math.max(4, (d.count / visitStats.maxDayCount) * 100)}%` }}
-                  title={`${d.count} pengunjung`}
-                ></div>
-              </div>
-              <div className="dash-chart-label">{d.label}</div>
-            </div>
-          ))}
-        </div>
+        <DayBarChart
+          days={visitStats.days.map((d) => ({ ...d, value: d.count }))}
+          max={visitStats.maxDayCount}
+          formatValue={(v) => `${v} pengunjung`}
+        />
       </div>
 
       <div className="dash-section">
         <h3 className="dash-section-title">Pendapatan per hari, 7 hari terakhir (hanya pesanan terkonfirmasi dan selesai)</h3>
-        <div className="dash-chart">
-          {stats.days.map((d, i) => (
-            <div className="dash-chart-col" key={i}>
-              <div className="dash-chart-bar-wrap">
-                <div
-                  className={`dash-chart-bar${d.isToday ? ' today' : ''}`}
-                  style={{ height: `${Math.max(4, (d.revenue / stats.maxDayRevenue) * 100)}%` }}
-                  title={formatPrice(d.revenue)}
-                ></div>
-              </div>
-              <div className="dash-chart-label">{d.label}</div>
-            </div>
-          ))}
-        </div>
+        <DayBarChart
+          days={stats.days.map((d) => ({ ...d, value: d.revenue }))}
+          max={stats.maxDayRevenue}
+          formatValue={formatPrice}
+          detail={(d) => `${d.orderCount} pesanan`}
+        />
       </div>
 
       <div className="dash-section">

@@ -180,10 +180,27 @@
   display: flex;
   align-items: flex-end;
   gap: 10px;
-  height: 140px;
+  /* 44px di atas batang tertinggi itu ruang buat .dash-chart-tip, supaya
+     tooltip-nya tidak menutupi judul seksi. */
+  height: 184px;
+  padding-top: 44px;
 }
 
-.dash-chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
+.dash-chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: default;
+  border-radius: var(--radius-sm);
+}
+.dash-chart-col:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .dash-chart-bar-wrap {
   flex: 1;
@@ -194,6 +211,7 @@
 }
 
 .dash-chart-bar {
+  position: relative;
   width: 60%;
   min-width: 10px;
   background: var(--latte-light);
@@ -202,6 +220,31 @@
 }
 
 .dash-chart-bar.today { background: var(--primary); }
+.dash-chart-col.active .dash-chart-bar:not(.today) { background: var(--latte); }
+
+/* Angka per batang, muncul saat hover/tap/fokus (lihat DayBarChart). */
+.dash-chart-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--white);
+  white-space: nowrap;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+}
+.dash-chart-tip.start { left: 0; transform: none; text-align: left; }
+.dash-chart-tip.end   { left: auto; right: 0; transform: none; text-align: right; }
+.dash-chart-tip strong { font-size: 13px; font-weight: 800; }
+.dash-chart-tip span   { font-size: 11px; font-weight: 600; }
 
 .dash-chart-label { font-size: 11px; font-weight: 700; color: var(--text-soft); margin-top: 8px; text-transform: capitalize; }
 
