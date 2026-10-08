@@ -802,15 +802,33 @@ CREATE POLICY "Admin read daily visits"
 -- shared/lib/visits.js). UPSERT + count = count + 1 atomic di satu statement
 -- supaya dua kunjungan bersamaan gak saling timpa (race condition sama kayak
 -- alasan place_order() jadi function, bukan sekadar preferensi).
-CREATE OR REPLACE FUNCTION track_visit()
+--
+-- Tanggalnya dikirim browser (`p_date`, tanggal lokal pengunjung), bukan
+-- CURRENT_DATE: database Supabase jalan di UTC, jadi CURRENT_DATE bikin
+-- kunjungan jam 00.00-07.00 WIB tercatat di hari sebelumnya. Zona waktu
+-- toko gak di-hardcode karena template ini dipakai klien WIB/WITA/WIT.
+-- Tanggal di luar ±1 hari dari tanggal server ditolak dan diganti
+-- CURRENT_DATE, biar anon gak bisa nulis ke tanggal sembarangan. Tanpa
+-- argumen (frontend lama) tetap jalan, jatuh ke CURRENT_DATE.
+--
+-- DROP dulu karena signature lama `track_visit()` tanpa argumen: kalau
+-- dibiarkan, dua function itu sama-sama cocok buat panggilan tanpa argumen.
+DROP FUNCTION IF EXISTS track_visit();
+CREATE OR REPLACE FUNCTION track_visit(p_date DATE DEFAULT NULL)
 RETURNS VOID
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public, pg_temp
 AS $$
   INSERT INTO daily_visits (visit_date, count)
-  VALUES (CURRENT_DATE, 1)
+  VALUES (
+    CASE
+      WHEN p_date BETWEEN CURRENT_DATE - 1 AND CURRENT_DATE + 1 THEN p_date
+      ELSE CURRENT_DATE
+    END,
+    1
+  )
   ON CONFLICT (visit_date) DO UPDATE SET count = daily_visits.count + 1;
 $$;
 
-GRANT EXECUTE ON FUNCTION track_visit() TO anon;
+GRANT EXECUTE ON FUNCTION track_visit(DATE) TO anon;

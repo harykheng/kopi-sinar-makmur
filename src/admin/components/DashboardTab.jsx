@@ -33,10 +33,6 @@ function sumItemCount(list) {
   }, 0);
 }
 
-function toDateKey(d) {
-  return d.toISOString().slice(0, 10);
-}
-
 function fullDayLabel(d) {
   return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' });
 }
@@ -101,7 +97,7 @@ export default function DashboardTab({ onGoToOrders }) {
         label: d.toLocaleDateString('id-ID', { weekday: 'short' }),
         fullLabel: fullDayLabel(d),
         isToday: i === 0,
-        count: countByDate.get(toDateKey(d)) || 0,
+        count: countByDate.get(dateKeyOf(d)) || 0,
       });
     }
     const maxDayCount = Math.max(1, ...days.map((d) => d.count));

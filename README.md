@@ -203,7 +203,7 @@ Dipakai halaman `/tracking/`. Karena `orders` RLS sengaja insert-only untuk `ano
 
 #### `track_visit()` — hitung pengunjung katalog per hari
 
-Halaman katalog customer (`/`) manggil `supabase.rpc('track_visit')` sekali per sesi tab (`sessionStorage`, bukan tiap render/refresh) lewat `src/shared/lib/visits.js`. Function ini upsert satu baris counter per tanggal ke tabel `daily_visits` (`count = count + 1`, atomic — bukan satu baris per kunjungan, biar tabelnya tidak tumbuh tak terbatas). `daily_visits` tidak punya policy SELECT untuk `anon`, cuma admin (login) yang bisa baca lewat tab **Dashboard** (chart "Pengunjung 7 Hari Terakhir"). Definisi lengkapnya ada di `supabase-setup.sql` §12.
+Halaman katalog customer (`/`) manggil `supabase.rpc('track_visit', { p_date })` sekali per sesi tab (`sessionStorage`, bukan tiap render/refresh) lewat `src/shared/lib/visits.js`. Function ini upsert satu baris counter per tanggal ke tabel `daily_visits` (`count = count + 1`, atomic — bukan satu baris per kunjungan, biar tabelnya tidak tumbuh tak terbatas). `p_date` adalah tanggal lokal pengunjung, bukan `CURRENT_DATE` server yang UTC, supaya kunjungan jam 00.00 sampai 07.00 WIB tidak tercatat di hari sebelumnya; tanggal di luar ±1 hari dari tanggal server diabaikan. `daily_visits` tidak punya policy SELECT untuk `anon`, cuma admin (login) yang bisa baca lewat tab **Dashboard** (chart "Pengunjung 7 Hari Terakhir"). Definisi lengkapnya ada di `supabase-setup.sql` §12.
 
 #### Realtime — notifikasi pesanan baru live di dashboard admin
 
