@@ -1,0 +1,13 @@
+{
+  // Ganti "name" ini per klien sebelum deploy (dipakai Cloudflare sebagai nama project/subdomain).
+  "name": "kopi-sinar-makmur",
+  "compatibility_date": "2026-08-14",
+  // Pure static-assets deploy — no Worker script needed. This tells Wrangler
+  // exactly what to serve, so it doesn't try to auto-detect/parse vite.config.js
+  // looking for a Cloudflare Workers Vite plugin setup that isn't there (this repo
+  // has no server-side Worker code; its only backend is a separate Supabase Edge
+  // Function, unrelated to Cloudflare).
+  "assets": {
+    "directory": "./dist"
+  }
+}

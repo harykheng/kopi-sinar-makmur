@@ -1,0 +1,374 @@
+/* Ordi Master shared styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+:root {
+  --primary:       #553125;
+  --primary-hover: #6b3d30;
+  --latte:         #c4956a;
+  --latte-light:   #e8d5c4;
+  --latte-xlight:  #f5ece4;
+  --cream:         #fdf8f4;
+  --white:         #ffffff;
+  --text-dark:     #1a0f0a;
+  --text-mid:      #6b4c3b;
+  --text-soft:     #7f5f4e; /* 5.75:1 di putih, 4.93:1 di latte-xlight (WCAG AA) */
+  --border:        #ede0d4;
+  --border-light:  #e8ded4;
+  --shadow-sm:  0 2px 8px  rgba(85,49,37,0.07);
+  --shadow-md:  0 4px 20px rgba(85,49,37,0.11);
+  --shadow-lg:  0 8px 32px rgba(85,49,37,0.16);
+  --radius-sm:  10px;
+  --radius-md:  16px;
+  --radius-lg:  22px;
+  --radius-xl:  28px;
+
+  /* Status colours. Defined once here because the same four order states are
+     drawn in three apps (customer, admin, tracking); a contrast fix has to
+     land in one place, not nine. Every pair below is >= 4.5:1. */
+  --status-pending-bg:   #fff3e0;
+  --status-pending-fg:   #9a3e00;
+  --status-progress-bg:  #fef3c7;
+  --status-progress-fg:  #92400e;
+  --status-done-bg:      #dcfce7;
+  --status-done-fg:      #15803d;
+  --status-cancel-bg:    #fee2e2;
+  --status-cancel-fg:    #b91c1c;
+  --danger:              #c0392b;
+  --danger-bg:           #fde8e8;
+  --success:             #15803d;
+  --success-hover:       #0f6b34;
+  --warning-bg:          #fff3cd;
+  --warning-border:      #f4c842;
+  --warning-fg:          #7a5c00;
+
+  /* WhatsApp-help chip: a green that is not the success green, because it
+     marks a channel, not a state. Text/background pair is 4.87:1. */
+  --wa-chip-bg:          #e7f7ef;
+  --wa-chip-fg:          #1a7a3c;
+  --text-strong:         #2d1a0e;
+  --text-warm:           #7a5538;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--white);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary { background: var(--primary); color: var(--white); }
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-secondary { background: var(--latte-light); color: var(--primary); }
+.btn-secondary:hover { background: var(--latte); color: var(--text-dark); }
+
+.btn-danger { background: #fde8e8; color: #c0392b; }
+.btn-danger:hover { background: #c0392b; color: var(--white); }
+
+/* FORMS */
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.form-group label { font-size: 13px; font-weight: 700; color: var(--text-mid); letter-spacing: 0.01em; }
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 13px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px; /* >=16px: iOS tidak auto-zoom saat fokus, jadi pinch zoom bisa tetap aktif */
+  font-weight: 500;
+  color: var(--text-dark);
+  background: var(--white);
+  transition: border-color 0.2s ease;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus { border-color: var(--primary); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.form-group input[type="file"] {
+  padding: 9px 14px;
+  cursor: pointer;
+}
+
+.form-group input[type="file"]::file-selector-button {
+  padding: 8px 16px;
+  margin-right: 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--white);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.form-group input[type="file"]::file-selector-button:hover { background: var(--primary-hover); }
+
+/* TOAST */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+  animation: toastIn 0.35s ease forwards;
+  min-width: 240px;
+  max-width: 320px;
+  border-left: 4px solid var(--latte);
+  pointer-events: all;
+}
+
+.toast.success { border-left-color: #5a9a6e; }
+.toast.error   { border-left-color: #c0392b; }
+.toast-icon    { font-size: 18px; flex-shrink: 0; }
+.toast-out     { animation: toastOut 0.3s ease forwards; }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 15, 10, 0.55);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+
+@media (min-width: 580px) {
+  .modal-overlay { align-items: center; padding: 20px; }
+}
+
+.modal-box {
+  background: var(--white);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 28px 24px 36px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(60px);
+  transition: transform 0.38s cubic-bezier(0.34, 1.1, 0.64, 1);
+}
+
+.modal-overlay.active .modal-box { transform: translateY(0); }
+
+@media (min-width: 580px) {
+  .modal-box {
+    border-radius: var(--radius-xl);
+    padding: 36px 32px;
+    transform: scale(0.94) translateY(8px);
+  }
+  .modal-overlay.active .modal-box { transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.modal-header h3 { font-size: 20px; font-weight: 800; color: var(--text-dark); }
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: var(--latte-xlight);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-mid);
+  transition: all 0.2s;
+  flex-shrink: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.modal-close:hover { background: var(--border); color: var(--text-dark); }
+
+/* SPINNER */
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 14px;
+  color: var(--text-soft);
+  font-weight: 600;
+  grid-column: 1 / -1;
+}
+
+/* KEYFRAMES */
+@keyframes spin     { to { transform: rotate(360deg); } }
+@keyframes toastIn  { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(110%); opacity: 0; } }
+@keyframes fadeUp   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp  { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+@keyframes pop {
+  0%, 100% { transform: scale(1); }
+  35%       { transform: scale(1.6); }
+  65%       { transform: scale(0.88); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  35%       { transform: scale(0.78); }
+  70%       { transform: scale(1.2); }
+}
+
+/* Keyboard focus ring for every control. Inputs keep their own indicator
+   (border turns --primary on :focus, see .form-group above). */
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+.form-group input:focus-visible,
+.form-group textarea:focus-visible,
+.form-group select:focus-visible { outline: none; }
+
+/* 44px minimum tap target (R-03). Two techniques, picked per element:
+
+   1. Text buttons and any button that sits in a stacked list get a REAL
+      min-height of 44px. Growing the box is safe there, and it means two
+      adjacent controls can never share a hit area.
+   2. Isolated round icon buttons keep their small visual size and get an
+      invisible 44px pseudo-element instead, so the compact header/cart layout
+      is unchanged. Only used where the neighbours are non-interactive. */
+
+.btn, .btn-sm, .order-filter-btn, .btn-logout, .admin-tab, .ois-change, .promo-remove-btn,
+.btn-oss-copy, .footer-track-link, .footer-social-link, .pickup-maps-link,
+.oss-track-link, .tier-badge-compare-link, .variant-opt-del, .variant-group-del,
+.btn-wa-help, .promo-apply-btn, .btn-pick-variant, .import-template-btn, .csf-cta {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.variant-opt-del, .variant-group-del { min-width: 44px; }
+
+.qty-btn, .co-item-del, .address-summary-remove, .modal-close, .variant-sheet-close,
+.profile-sheet-close, .oss-close, .qview-close, .tier-compare-close, .topbar-back,
+.btn-wa-icon, .address-picker-back, .qp-back, .image-remove-btn, .tier-badge {
+  position: relative;
+}
+.qty-btn::before, .co-item-del::before, .address-summary-remove::before,
+.modal-close::before, .variant-sheet-close::before, .profile-sheet-close::before,
+.oss-close::before, .qview-close::before, .tier-compare-close::before,
+.topbar-back::before, .btn-wa-icon::before, .address-picker-back::before,
+.qp-back::before, .image-remove-btn::before, .tier-badge::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+}
+
+/* Product image placeholder: first letter of the product name instead of a
+   hard-coded coffee emoji (template is multi-client). */
+.product-image-placeholder, .variant-sheet-img-ph, .co-item-img-ph, .admin-product-img {
+  font-weight: 800;
+  color: var(--latte);
+  font-family: 'Plus Jakarta Sans', 'Nunito', sans-serif;
+}
+
+/* Elements that became real <button>s for keyboard access (order type cards,
+   date chips, ongkir options, address results) still need to look like the
+   cards they were: buttons carry a UA font, centred text and auto width. */
+.order-type-card, .date-chip, .ongkir-option-item, .address-picker-result-item {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  text-align: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.order-type-card, .ongkir-option-item, .address-picker-result-item { width: 100%; }
+.order-type-card { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+/* Respect the OS "reduce motion" setting. Everything here is decoration or a
+   transition; the only thing kept is the spinner, because a frozen spinner
+   would read as a hung request rather than a calm one. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .spinner, .spinner-sm {
+    animation-duration: 0.75s !important;
+    animation-iteration-count: infinite !important;
+  }
+}

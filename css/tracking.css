@@ -1,0 +1,86 @@
+/* Tracking page (/tracking/). Reuses the variables from main.css and
+   .catalog-topbar / .co-item / .form-group from catalog.css. */
+
+.trk-page {
+  min-height: 100dvh;
+  background: var(--cream);
+}
+
+.trk-body {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+.trk-form {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  border: 1.5px solid var(--border);
+}
+
+.trk-submit { width: 100%; justify-content: center; padding: 14px; margin-top: 4px; }
+
+.trk-notfound {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  padding: 18px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+.trk-notfound span:first-child { font-size: 26px; line-height: 1; }
+.trk-notfound strong { display: block; color: var(--text-dark); font-size: 14px; margin-bottom: 2px; }
+.trk-notfound p { margin: 0; }
+
+.trk-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  padding: 18px;
+  margin-top: 16px;
+}
+
+.trk-status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.trk-status-pending   { background: var(--status-pending-bg); color: var(--status-pending-fg); }
+.trk-status-confirmed { background: var(--status-progress-bg); color: var(--status-progress-fg); }
+.trk-status-done      { background: var(--status-done-bg); color: var(--status-done-fg); }
+.trk-status-cancelled { background: var(--status-cancel-bg); color: var(--status-cancel-fg); }
+
+.trk-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.trk-order-number { font-size: 18px; font-weight: 800; color: var(--text-dark); letter-spacing: -0.01em; }
+.trk-order-date    { font-size: 12px; font-weight: 600; color: var(--text-soft); }
+
+.trk-meta {
+  background: var(--cream);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+.trk-meta-row { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; padding: 4px 0; }
+.trk-meta-row:not(:last-child) { border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 4px; }
+.trk-meta-label { color: var(--text-soft); font-weight: 600; flex-shrink: 0; }
+.trk-meta-row span:last-child { text-align: right; color: var(--text-dark); font-weight: 600; }
+
+.trk-items { margin-bottom: 12px; }
+
+.trk-totals { border-top: 1px solid var(--border); padding-top: 10px; }
+.trk-total-line { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-soft); padding: 3px 0; }
+.trk-grand-total { font-size: 16px; font-weight: 800; color: var(--text-dark); margin-top: 6px; }
